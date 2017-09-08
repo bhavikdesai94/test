@@ -1,0 +1,67 @@
+<html>
+<head>
+    <script src="fabric.min.js"></script>
+</head>
+
+<body>
+    <div style="backgound:#F5F7F6;" width="450" height="450">
+    <canvas id="canvas" width="450" height="450" style="border:1px solid #000000;"></canvas>
+    </div>
+    <script>
+        // create a wrapper around native canvas element (with id="c")
+        var canvas = new fabric.Canvas('canvas');
+
+        // create a rectangle object
+        var rect = new fabric.Rect({
+            left: 125,
+            top: 125,
+            fill:'transparent',
+            strokeWidth:1,
+            stroke: '#ccc',
+            width: 200,
+            height: 200,
+            hasControls: false,
+            lockMovementX: true,
+            lockMovementY: true,
+            selectable: false,
+            padding: 10,
+            transparentCorners: false,
+            hoverCursor: 'pointer',
+            hasBorders: false,
+            zIndex: 0
+        });
+        canvas.add(rect);
+        var text = canvas.add(new fabric.Text('Text Inside Rect', { 
+            fill: 'red',
+            left: 130,
+            top: 130, 
+            scaleX: 1,
+            scaleY: 1,
+        }));
+        canvas.renderAll(); 
+        //console.log(rect.getBoundingRect());
+        canvas.observe("object:moving", function(e){
+            var obj = e.target;
+            if(obj.currentHeight > obj.canvas.height || obj.currentWidth > obj.canvas.width){
+                return;
+            }        
+            obj.setCoords();        
+            // top-left  corner
+            if(obj.getBoundingRect().top < 0 || obj.getBoundingRect().left < 0){
+                obj.top = Math.max(obj.top, obj.top-obj.getBoundingRect().top);
+                obj.left = Math.max(obj.left, obj.left-obj.getBoundingRect().left);
+            }
+            //bot-right corner
+            if(obj.getBoundingRect().top+obj.getBoundingRect().height  > obj.canvas.height || obj.getBoundingRect().left+obj.getBoundingRect().width  > obj.canvas.width){
+                obj.top = Math.min(obj.top, obj.canvas.height-obj.getBoundingRect().height+obj.top-obj.getBoundingRect().top);
+                obj.left = Math.min(obj.left, obj.canvas.width-obj.getBoundingRect().width+obj.left-obj.getBoundingRect().left);
+            }
+
+        });
+        // console.log("Rect => Width:"+rect.get('width')+" Height:"+rect.get('height')+" Left:"+rect.get('left')+" Top:"+rect.get('top'));
+        // console.log("Text => Width:"+text.get('width')+" Height:"+text.get('height')+" Left:"+text.get('left')+" Top:"+text.get('top'));
+        // console.log(canvas.getObjects());
+        //canvas.loadFromJSON('{"objects":[{"type":"rect","left":50,"top":50,"width":20,"height":20,"fill":"green","overlayFill":null,"stroke":null,"strokeWidth":1,"strokeDashArray":null,"scaleX":1,"scaleY":1,"angle":0,"flipX":false,"flipY":false,"opacity":1,"selectable":true,"hasControls":true,"hasBorders":true,"hasRotatingPoint":false,"transparentCorners":true,"perPixelTargetFind":false,"rx":0,"ry":0},{"type":"circle","left":100,"top":100,"width":100,"height":100,"fill":"red","overlayFill":null,"stroke":null,"strokeWidth":1,"strokeDashArray":null,"scaleX":1,"scaleY":1,"angle":0,"flipX":false,"flipY":false,"opacity":1,"selectable":true,"hasControls":true,"hasBorders":true,"hasRotatingPoint":false,"transparentCorners":true,"perPixelTargetFind":false,"radius":50}],"background":"rgba(0, 0, 0, 0)"}');
+    </script>
+</body>
+</html>
